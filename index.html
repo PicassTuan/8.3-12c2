@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gửi Tặng</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Segoe+UI:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Segoe UI', sans-serif; }
+        #canvas-container { width: 100vw; height: 100vh; position: absolute; z-index: 1; pointer-events: none;}
+        
+        #guide-text {
+            position: absolute; top: 10%; left: 50%; transform: translateX(-50%);
+            color: rgba(255, 182, 193, 0.9); font-size: 20px; font-weight: bold; 
+            text-shadow: 0 0 15px #FF69B4; z-index: 10; pointer-events: none;
+            background: rgba(0,0,0,0.4); padding: 10px 20px; border-radius: 20px;
+            animation: pulse 2s infinite; border: 1px solid rgba(255,105,180, 0.5);
+        }
+
+        @keyframes pulse { 0% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.05); } 100% { transform: translateX(-50%) scale(1); } }
+
+        /* Vùng bấm vô hình bao quanh lá thư */
+        #click-zone {
+            position: absolute; right: 20%; top: 40%; width: 300px; height: 200px;
+            transform: translate(50%, -50%); z-index: 20; cursor: pointer;
+        }
+
+        #letter-ui {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
+            width: 85%; max-width: 600px; z-index: 30;
+            background: rgba(10, 5, 10, 0.85); backdrop-filter: blur(5px);
+            border: 2px solid rgba(255, 105, 180, 0.4); box-shadow: 0 0 40px rgba(255, 105, 180, 0.4);
+            border-radius: 20px; padding: 40px; text-align: left;
+            opacity: 0; pointer-events: none; transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #letter-ui.visible { transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; }
+
+        #letter-content {
+            font-size: 26px; color: #FFB6C1; font-family: 'Dancing Script', cursive; 
+            line-height: 1.8; text-shadow: 0 2px 5px rgba(0,0,0,0.8); white-space: pre-wrap;
+            min-height: 150px;
+        }
+
+        #btn-next {
+            margin-top: 35px; background: linear-gradient(135deg, #FF1493, #C71585); 
+            color: #FFF; border: 2px solid #FFB6C1; padding: 12px 40px; border-radius: 30px; 
+            font-size: 18px; font-weight: bold; cursor: pointer; 
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.5); transition: 0.3s;
+            display: block; margin-left: auto; margin-right: auto;
+        }
+        
+        #btn-next:hover { transform: translateY(-3px); box-shadow: 0 0 30px rgba(255, 20, 147, 0.8); }
+
+    </style>
+</head>
+<body>
+
+    <div id="guide-text">✨ Nhấn vào lá thư để mở ✨</div>
+    <div id="click-zone" onclick="openLetter()"></div>
+
+    <div id="letter-ui">
+        <div id="letter-content">Đang tải nội dung...</div>
+        <button id="btn-next" onclick="goToClassPage()">Chúng ta</button>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <script>
+        // 1. DATA & LOGIC TEXT
+        const urlParams = new URLSearchParams(window.location.search);
+        const receiverName = urlParams.get('name') || "Cậu";
+
+        const wishes = [
+            "Chúc tuổi mới luôn rạng rỡ, xinh đẹp và mọi ước mơ đều trở thành hiện thực.",
+            "Mong mọi điều tốt đẹp nhất, dịu dàng nhất sẽ đến trong ngày đặc biệt này.",
+            "Cảm ơn vì đã luôn là một phần tuyệt vời của tuổi thanh xuân."
+        ];
+        
+        const randomWish = wishes[Math.floor(Math.random() * wishes.length)];
+        const fullText = `Gửi ${receiverName},\n\n${randomWish}\n\nMãi trân trọng!`;
+        document.getElementById('letter-content').innerText = fullText;
+
+        function goToClassPage() {
+            window.location.href = './12c2/index.html';
+        }
+
+        // 2. THREE.JS ENGINE
+        let scene, camera, renderer, bouquetParticles, letterParticles;
+        let isLetterOpen = false;
+
+        function createCustomTexture(type) {
+            const canvas = document.createElement('canvas'); canvas.width = 128; canvas.height = 128; const ctx = canvas.getContext('2d'); const cx = 64, cy = 64;
+            if (type === 'pink') { 
+                const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 40); grd.addColorStop(0, '#FFFFFF'); grd.addColorStop(0.3, '#FF69B4'); grd.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = grd; ctx.fillRect(0,0,128,128);
+            } else if (type === 'gold') {
+                const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 30); grd.addColorStop(0, '#FFFFFF'); grd.addColorStop(0.4, '#FFD700'); grd.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = grd; ctx.fillRect(0,0,128,128);
+            } else if (type === 'white') {
+                const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 50); grd.addColorStop(0, '#FFFFFF'); grd.addColorStop(0.2, '#FFE4E1'); grd.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = grd; ctx.fillRect(0,0,128,128);
+            }
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        const texPink = createCustomTexture('pink'); const texGold = createCustomTexture('gold'); const texWhite = createCustomTexture('white');
+
+        function init() {
+            scene = new THREE.Scene(); scene.fog = new THREE.FogExp2(0x000000, 0.003);
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 1, 1000); camera.position.z = 150;
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+            renderer.setSize(window.innerWidth, window.innerHeight); renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            createBouquet(); createLetter();
+            window.addEventListener('resize', onWindowResize);
+            animate();
+        }
+
+        function createBouquet() {
+            const count = 7000; const geometry = new THREE.BufferGeometry(); const positions = []; const colors = []; const targets = []; const sizes = [];
+            
+            for(let i=0; i<count; i++) {
+                let x, y, z; let c = new THREE.Color(); let size = 1.0;
+
+                // Tỉ lệ hạt: 70% nụ hoa, 30% giấy gói
+                if (Math.random() < 0.7) {
+                    // Cấu trúc hoa: Hình vòm (bán cầu)
+                    const u = Math.random(); const v = Math.random();
+                    const theta = u * 2.0 * Math.PI; const phi = Math.acos(v); 
+                    
+                    // Tạo độ gồ ghề (bumps) giống các bông hoa sát nhau
+                    const bump = Math.sin(theta * 6) * Math.sin(phi * 6) * 3;
+                    const r = 25 + bump + (Math.random()*2); // Bán kính tổng thể khoảng 25-30
+                    
+                    x = r * Math.sin(phi) * Math.cos(theta);
+                    y = r * Math.cos(phi) + 10; // Nâng lên 10 đơn vị
+                    z = r * Math.sin(phi) * Math.sin(theta);
+                    
+                    c.setHex(Math.random() > 0.3 ? 0xFF69B4 : 0xFF1493); // Chủ đạo hồng, xuyết đỏ
+                    size = 2.5 + Math.random() * 1.5;
+                } else {
+                    // Cấu trúc giấy gói: Hình nón thuôn dài
+                    const h = Math.random() * 45; // Chiều cao nón 45
+                    y = -h + 10; // Điểm chóp dưới cùng ở y = -35
+                    
+                    // Tính bán kính r theo chiều cao y: lật ngược lại, trên to dưới nhỏ
+                    const r = 20 * ( (45 - h) / 45 ); 
+                    const theta = Math.random() * 2 * Math.PI;
+                    
+                    x = r * Math.cos(theta);
+                    z = r * Math.sin(theta);
+                    
+                    c.setHex(0xFFE4E1); // Hồng phấn cực nhạt/Trắng
+                    size = 1.5 + Math.random();
+                }
+
+                // Dịch toàn bộ bó hoa sang trái
+                x -= 35; 
+                
+                positions.push((Math.random() - 0.5) * 400, (Math.random() - 0.5) * 400, (Math.random() - 0.5) * 400); // Rải rác ban đầu
+                targets.push(x, y, z); colors.push(c.r, c.g, c.b); sizes.push(size);
+            }
+
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+            geometry.userData = { targets: targets, originalTargets: [...targets] };
+
+            const material = new THREE.PointsMaterial({
+                size: 1.0, map: texWhite, transparent: true, vertexColors: true,
+                blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
+            });
+
+            // Sử dụng shader để thay đổi kích thước hạt dựa trên attribute 'size'
+            material.onBeforeCompile = (shader) => {
+                shader.vertexShader = shader.vertexShader.replace( 'void main() {', 'attribute float size;\nvoid main() {' );
+                shader.vertexShader = shader.vertexShader.replace( 'gl_PointSize = size;', 'gl_PointSize = size * ( 300.0 / -mvPosition.z );' );
+            };
+
+            bouquetParticles = new THREE.Points(geometry, material); scene.add(bouquetParticles);
+        }
+
+        function createLetter() {
+            const count = 3000; const geometry = new THREE.BufferGeometry(); const positions = []; const targetsIdle = []; const targetsOpen = [];
+
+            for(let i=0; i<count; i++) {
+                // Dáng đóng: Phong bì nằm bên PHẢI bó hoa
+                let tx = (Math.random() - 0.5) * 50 + 40; // Rộng 50, Tâm ở x=40
+                let ty = (Math.random() - 0.5) * 30;      // Cao 30
+                let tz = (Math.random() - 0.5) * 3;
+                
+                // Tạo hình nắp phong bì (Tam giác mờ)
+                if(ty > 0 && Math.abs(tx - 40) + ty * 1.6 < 25) { tz += 3; }
+                targetsIdle.push(tx, ty, tz);
+
+                // Dáng mở: Màn hình lớn rải đều làm nền thư
+                let ox = (Math.random() - 0.5) * 160; let oy = (Math.random() - 0.5) * 100; let oz = (Math.random() - 0.5) * 20 - 30; 
+                targetsOpen.push(ox, oy, oz);
+
+                positions.push((Math.random() - 0.5) * 400, (Math.random() - 0.5) * 400, (Math.random() - 0.5) * 400);
+            }
+
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geometry.userData = { targetsIdle: targetsIdle, targetsOpen: targetsOpen, currentTargets: targetsIdle };
+
+            const material = new THREE.PointsMaterial({ size: 2.5, map: texGold, transparent: true, color: 0xFFD700, blending: THREE.AdditiveBlending, depthWrite: false });
+            letterParticles = new THREE.Points(geometry, material); scene.add(letterParticles);
+        }
+
+        function openLetter() {
+            if (isLetterOpen) return;
+            isLetterOpen = true;
+            document.getElementById('guide-text').style.opacity = '0';
+            document.getElementById('click-zone').style.display = 'none';
+            
+            letterParticles.geometry.userData.currentTargets = letterParticles.geometry.userData.targetsOpen;
+            
+            const bTargets = bouquetParticles.geometry.userData.targets;
+            for(let i=0; i<bTargets.length; i+=3) { bTargets[i] -= 25; } // Bó hoa dạt nhẹ sang trái thêm
+
+            setTimeout(() => { document.getElementById('letter-ui').classList.add('visible'); }, 1200); // Trì hoãn chờ hạt bay ra
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = Date.now() * 0.001;
+
+            if (!isLetterOpen) {
+                bouquetParticles.rotation.y += 0.003;
+                letterParticles.position.y = Math.sin(time * 2) * 3; // Lơ lửng
+                letterParticles.rotation.z = Math.sin(time) * 0.05; // Lắc nhẹ
+            } else {
+                letterParticles.position.y += (0 - letterParticles.position.y) * 0.05;
+                letterParticles.rotation.z += (0 - letterParticles.rotation.z) * 0.05;
+                letterParticles.rotation.y = Math.sin(time * 0.5) * 0.1; // Nền dao động nhẹ
+            }
+
+            // Lerp (Hút hạt về target)
+            const speed = 0.06;
+            const bPos = bouquetParticles.geometry.attributes.position.array; const bTar = bouquetParticles.geometry.userData.targets;
+            for(let i=0; i<bPos.length; i++) { bPos[i] += (bTar[i] - bPos[i]) * speed; }
+            bouquetParticles.geometry.attributes.position.needsUpdate = true;
+
+            const lPos = letterParticles.geometry.attributes.position.array; const lTar = letterParticles.geometry.userData.currentTargets;
+            for(let i=0; i<lPos.length; i++) { lPos[i] += (lTar[i] - lPos[i]) * speed; }
+            letterParticles.geometry.attributes.position.needsUpdate = true;
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
+        
+        window.onload = init;
+    </script>
+</body>
+</html>
