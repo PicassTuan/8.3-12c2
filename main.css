@@ -375,20 +375,12 @@ body {
 
 .flower {
   position: absolute;
-  /* 1. Ép hoa tụt thật sâu xuống để gốc hoa giấu vào giấy gói */
-  bottom: 2vmin !important; /* Số càng nhỏ hoa càng tụt xuống thấp */
+  bottom: 8vmin !important; /* Gốc nằm vừa phải */
   left: 50%;
-  
-  /* 2. CHÍNH LÀ DÒNG CHỮA LỖI NÀY: Dùng Scale để thu nhỏ toàn bộ bó hoa */
-  /* scale(0.7) nghĩa là hoa chỉ bằng 70% so với kích thước gốc */
-  transform: scale(0.5) !important;
-  
-  /* 3. Đảm bảo hoa vẫn mọc lên từ đáy */
+  transform: none !important; /* Hủy bỏ lệnh thu nhỏ cũ */
   transform-origin: bottom center !important;
-  
   z-index: 10;
   --fl-speed: 0.8s;
-  /* Giữ nguyên Width gốc để không hỏng animation */
   width: 1vmin; 
 }
 
