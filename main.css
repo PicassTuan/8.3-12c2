@@ -377,14 +377,14 @@ body {
 
 .flower {
   position: absolute;
-  bottom: 17vmin;
+  /* 1. Giảm số này để hoa thấp xuống, giấu gốc vào giấy gói */
+  bottom: 5vmin !important; /* Đã sửa từ 10vmin thành 5vmin */
+  left: 50%;
   transform-origin: bottom center;
   z-index: 10;
-  --fl-speed: 0.3s;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  -webkit-perspective: 1000;
-  perspective: 1000;
+  --fl-speed: 0.8s;
+  /* 2. Giảm số này để thu nhỏ độ phình của cả bó hoa */
+  width: 0.8vmin !important; /* Đã giảm một chút để hoa gọn hơn */
 }
 /* === Top 3: Vươn cao giữa === */
 .flower--1 {
