@@ -375,15 +375,15 @@ body {
 
 .flower {
   position: absolute;
-  bottom: 8vmin !important; /* Gốc nằm vừa phải */
-  left: 50%;
-  transform: none !important; /* Hủy bỏ lệnh thu nhỏ cũ */
-  transform-origin: bottom center !important;
+  bottom: 17vmin;
+  transform-origin: bottom center;
   z-index: 10;
-  --fl-speed: 0.8s;
-  width: 1vmin; 
+  --fl-speed: 0.3s;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  perspective: 1000;
 }
-
 /* === Top 3: Vươn cao giữa === */
 .flower--1 {
   left: 50%;
