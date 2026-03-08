@@ -240,17 +240,42 @@ function closeLetter() {
     }
 }
 
+// ==========================================
+// 5. BẮN 4 ẢNH LÊN MÀN HÌNH (Đã tối ưu cho cả Điện thoại & Máy tính)
+// ==========================================
 function createFlyingImages() {
     const container = document.getElementById('flyingImages');
     if (!container) return;
     container.innerHTML = '';
 
-    const positions = [
-        { left: '8%', top: '38%', delay: '0s', rot: '-14deg', z: '20' },     
-        { left: '27%', top: '55%', delay: '0.4s', rot: '0deg', z: '40' },     
-        { left: '48%', top: '38%', delay: '0.8s', rot: '16deg', z: '30' },    
-        { left: '72%', top: '58%', delay: '1.2s', rot: '6deg', z: '20' }      
-    ];
+    let positions = [];
+    let cardPadding = '10px 10px 35px 10px';
+    let imgWidth = '180px';
+    let imgHeight = '240px';
+
+    // KIỂM TRA: NẾU LÀ MÀN HÌNH ĐIỆN THOẠI (Chiều rộng <= 768px)
+    if (window.innerWidth <= 768) {
+        imgWidth = '130px';  // Thu nhỏ ảnh lại một chút
+        imgHeight = '170px';
+        cardPadding = '8px 8px 25px 8px'; // Thu nhỏ viền polaroid
+        
+        positions = [
+            // Xếp thành 2 hàng, đan xen nhau tạo độ lộn xộn tự nhiên
+            { left: '3%', top: '40%', delay: '0s', rot: '-12deg', z: '20' },     // Hàng 1 - Trái
+            { left: '48%', top: '45%', delay: '0.4s', rot: '8deg', z: '40' },    // Hàng 1 - Phải (Nổi lên trên)
+            { left: '8%', top: '65%', delay: '0.8s', rot: '6deg', z: '30' },     // Hàng 2 - Trái
+            { left: '45%', top: '70%', delay: '1.2s', rot: '-8deg', z: '50' }    // Hàng 2 - Phải
+        ];
+    } 
+    // NẾU LÀ MÀN HÌNH MÁY TÍNH (Dàn ngang như cũ)
+    else {
+        positions = [
+            { left: '8%', top: '38%', delay: '0s', rot: '-14deg', z: '20' },     
+            { left: '27%', top: '55%', delay: '0.4s', rot: '0deg', z: '40' },     
+            { left: '48%', top: '38%', delay: '0.8s', rot: '16deg', z: '30' },    
+            { left: '72%', top: '58%', delay: '1.2s', rot: '6deg', z: '20' }      
+        ];
+    }
 
     for (let i = 1; i <= 4; i++) {
         let card = document.createElement('div');
@@ -260,9 +285,9 @@ function createFlyingImages() {
         card.style.top = positions[i-1].top;
         card.style.transform = `translateY(100vh) rotate(${positions[i-1].rot})`; 
         
-        card.style.padding = '10px 10px 35px 10px';
+        card.style.padding = cardPadding;
         card.style.background = '#fff';
-        if (i === 3) card.style.border = '2px solid #8b5cf6';
+        if (i === 3 && window.innerWidth > 768) card.style.border = '2px solid #8b5cf6'; // Chỉ viền tím trên máy tính
         
         card.style.borderRadius = '5px';
         card.style.boxShadow = '0 15px 35px rgba(0,0,0,0.4)';
@@ -271,7 +296,7 @@ function createFlyingImages() {
         card.style.cursor = 'pointer';
         card.style.zIndex = positions[i-1].z;
 
-        card.onmouseover = () => { card.style.transform = `translateY(0) rotate(${positions[i-1].rot}) scale(1.15)`; card.style.zIndex = '50'; };
+        card.onmouseover = () => { card.style.transform = `translateY(0) rotate(${positions[i-1].rot}) scale(1.15)`; card.style.zIndex = '100'; };
         card.onmouseout = () => { card.style.transform = `translateY(0) rotate(${positions[i-1].rot}) scale(1)`; card.style.zIndex = positions[i-1].z; };
         
         card.onclick = openLetter;
@@ -279,8 +304,8 @@ function createFlyingImages() {
         let img = document.createElement('img');
         img.src = `images/${folderName}/${i}.jpg`; 
         
-        img.style.width = '180px';
-        img.style.height = '240px';
+        img.style.width = imgWidth;
+        img.style.height = imgHeight;
         img.style.objectFit = 'cover';
         img.style.borderRadius = '2px';
         
@@ -297,7 +322,7 @@ function createFlyingImages() {
                 card.style.transition = 'transform 0.4s'; 
                 card.animate([
                     { marginTop: '0px' },
-                    { marginTop: '-15px' },
+                    { marginTop: '-10px' },
                     { marginTop: '0px' }
                 ], {
                     duration: 4000,
