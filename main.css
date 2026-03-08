@@ -2935,3 +2935,58 @@ body {
     opacity: 0;
   }
 }
+/* =========================================
+   HIỆU ỨNG NGÔI SAO VÀ CHỮ LỜI CHÚC (ĐÃ THÊM)
+   ========================================= */
+.night {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none; /* Không cản trở việc bấm vào hoa */
+}
+
+.star {
+    position: absolute;
+    background-color: #ffffff;
+    border-radius: 50%;
+    animation: twinkle infinite linear;
+    opacity: 0;
+}
+
+.star.small { width: 1.5px; height: 1.5px; }
+.star.medium { width: 2.5px; height: 2.5px; box-shadow: 0 0 4px #fff; }
+.star.large { width: 3.5px; height: 3.5px; box-shadow: 0 0 6px #fff; }
+
+@keyframes twinkle {
+    0% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 1; transform: scale(1.2); }
+    100% { opacity: 0; transform: scale(0.5); }
+}
+
+.teachers-day-text {
+    position: absolute;
+    top: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    width: 100%;
+    z-index: 10;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 182, 193, 0.8); /* Ánh sáng hồng nhạt */
+}
+
+.teachers-day-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2.2rem;
+    margin-bottom: 5px;
+}
+
+.teachers-day-date {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    min-height: 30px; /* Giữ khung không bị giật khi chữ đang gõ */
+}
