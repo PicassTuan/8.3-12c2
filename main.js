@@ -6,7 +6,7 @@ let rawName = urlParams.get('name');
 
 let displayName = rawName ? rawName : "cậu"; // Mặc định nếu ko có ?name=
 
-// Tạo mã tên để nhận diện (VD: "Diệp Hà" -> "diepha", "Linh" -> "linh")
+// Tạo mã tên để nhận diện
 let folderName = 'default';
 if (rawName) {
     folderName = rawName.toLowerCase()
@@ -15,48 +15,29 @@ if (rawName) {
                         .replace(/[^a-z0-9]/g, ''); 
 }
 
-// ----------------------------------------------------
-// BẢNG CÂU CHÚC DỰ PHÒNG (Dành cho những tên bạn chưa viết riêng)
-// ----------------------------------------------------
+// KHAI BÁO BẢNG CÂU CHÚC RIÊNG (Sửa lỗi chưa khai báo customWishes)
+const customWishes = {
+    // Nếu bạn có câu chúc riêng cho ai thì điền vào đây. VD: "diepha": "Chúc Diệp Hà..."
+};
+
+// BẢNG CÂU CHÚC DỰ PHÒNG (Đã xóa bỏ đoạn khai báo trùng lặp)
 const defaultWishes = [
     `Chúc ${displayName} một ngày 8/3 thật rạng rỡ và ngập tràn hoa hồng!\n\nNăm cuối cấp rồi, mong cậu luôn giữ được tinh thần lạc quan, sức khỏe dồi dào để chiến đấu hết mình với kỳ thi ĐGNL (HSA) và kỳ thi THPT Quốc gia sắp tới. Chúc mọi nguyện vọng của cậu đều thành hiện thực nhé! ✨`,
-    
     `Gửi đến ${displayName} ngàn lời chúc tốt đẹp nhất nhân ngày của một nửa thế giới.\n\nTuổi 18 thật đẹp, và càng tuyệt vời hơn khi chúng ta cùng là một phần của đại gia đình 12C2 gồm 52 thành viên. Chúc cậu luôn giữ được nụ cười tỏa nắng, mãi tự tin và đỗ vào ngôi trường đại học mơ ước! 🎓🌷`,
-    
     `Nhân ngày Quốc tế Phụ nữ, chúc ${displayName} nhận được thật nhiều tình yêu thương.\n\nMong cậu luôn là một cô gái cá tính, mạnh mẽ và rực rỡ như những phản ứng hóa học tỏa nhiệt vậy. Chúc ${displayName} luôn hạnh phúc theo cách riêng của mình và bứt phá đạt điểm cao trong những bài thi trắc nghiệm sắp tới. 💖`,
-    
     `Mùng 8/3 chúc ${displayName} lúc nào cũng vui vẻ, yêu đời và không bao giờ đánh mất sự hồn nhiên của tuổi học trò.\n\nChặng đường phía trước dẫu có nhiều bài vở và những kỳ thi căng thẳng, nhưng mình tin cậu sẽ vượt qua tất cả để chạm đến ước mơ đã chọn. Tỏa sáng nhé! 🌟`,
-    
     `Chúc ${displayName} ngày mùng 8 tháng 3 ngập tràn tiếng cười và nhận được những món quà thật xinh xắn.\n\nCảm ơn cậu vì đã luôn là một người bạn tuyệt vời, một mảnh ghép không thể thiếu tạo nên thanh xuân rực rỡ của tập thể lớp mình. Chúc cậu một đời bình an và thành công! 🌸`,
-    
     `Gửi ${displayName}, chúc cậu có một ngày lễ thật trọn vẹn bên gia đình và những người yêu thương.\n\nNăm nay là năm quyết định rồi, mong rằng cậu sẽ có "nhân phẩm" khoanh trắc nghiệm đâu trúng đó, vượt qua mọi bài thi một cách xuất sắc và những dự định của cậu đều sẽ nở hoa. Cố lên nhé! 🍀`,
-    
     `Chúc cô gái xinh đẹp ${displayName} 8/3 thật nhiều niềm vui và hạnh phúc!\n\nHãy luôn trân trọng bản thân, giữ vững tinh thần lạc quan trước mọi áp lực học hành. Chúc cậu có một năm lớp 12 thật đáng nhớ và một tương lai rực rỡ đón chờ phía trước nha. 🌻`,
-    
     `Chúc ${displayName} một ngày đặc biệt đong đầy những khoảnh khắc ấm áp.\n\nMong cậu luôn bình an, giữ mãi nét đáng yêu và lưu giữ được những kỷ niệm đẹp đẽ nhất của tuổi 18 cùng các bạn trong lớp. Chúc cậu thi đâu đỗ đấy, làm bài thật mượt nhé! 💌`,
-    
     `Nhân ngày của phái đẹp, chúc ${displayName} lúc nào cũng tươi tắn như hoa, học hành tấn tới và gặp thật nhiều may mắn.\n\nMong rằng trên con đường sắp tới, cậu sẽ gặt hái được những điểm số mơ ước và luôn được mọi người xung quanh yêu quý, chở che. 🎀`,
-    
     `Mãi luôn là một cô gái tuyệt vời, độc lập và tự tin nhé ${displayName}!\n\nChúc cậu có một ngày 8/3 thật ý nghĩa. Mong chúng ta sẽ cùng nhau tạo nên một thanh xuân không hối tiếc, vượt qua mọi thử thách cuối cấp và cùng nhau mỉm cười trên bục vinh quang. ❤️`
 ];
 
-// ----------------------------------------------------
-// BẢNG CÂU CHÚC DỰ PHÒNG (Dành cho những tên bạn chưa viết riêng)
-// ----------------------------------------------------
-const defaultWishes = [
-    `Chúc ${displayName} luôn xinh đẹp, rạng rỡ và đạt được mọi ước mơ.\n\nMong mọi điều tốt lành nhất sẽ đến bên ${displayName}!`,
-    `Gửi ngàn lời chúc ngọt ngào nhất đến ${displayName}.\n\nChúc ${displayName} một ngày 8/3 ngập tràn niềm vui nhé!`
-];
-
-// ----------------------------------------------------
-// LOGIC CHỌN LỌC CÂU CHÚC
-// ----------------------------------------------------
 let randomMessage = "";
-// Nếu mã tên (folderName) có xuất hiện trong bảng cố định:
 if (customWishes[folderName]) {
-    randomMessage = customWishes[folderName]; // Dùng câu riêng
+    randomMessage = customWishes[folderName];
 } else {
-    // Nếu không có: Bốc ngẫu nhiên câu dự phòng
     randomMessage = defaultWishes[Math.floor(Math.random() * defaultWishes.length)];
 }
 
@@ -67,7 +48,6 @@ const headerMessages = [
 
 // ==========================================
 // 2. KHỞI TẠO NỀN (Bầu trời sao & Gõ chữ)
-// (Từ đoạn này trở đi giữ nguyên code cũ của bạn...)
 // ==========================================
 function createStarryNight() {
     const night = document.querySelector('.night');
@@ -121,7 +101,7 @@ function startTypingMessages(element, messages) {
 }
 
 // ==========================================
-// 3. KHỞI CHẠY GIAO DIỆN
+// 3. KHỞI CHẠY GIAO DIỆN VÀ GẮN NÚT BẤM
 // ==========================================
 let isPlaying = false;
 let isTyping = false;
@@ -133,6 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
     createStarryNight();
     const titleEl = document.querySelector('.teachers-day-title');
     const dateEl = document.querySelector('.teachers-day-date');
+    
     if (titleEl) titleEl.innerText = `Chúc mừng Ngày Quốc tế Phụ nữ 🌷`;
     if (dateEl) {
         dateEl.style.display = 'block';
@@ -145,22 +126,46 @@ document.addEventListener("DOMContentLoaded", () => {
         popupImg.onerror = () => { popupImg.src = 'images/girl.jpeg'; }; 
     }
 
+    // Gắn sự kiện Click cho Bó hoa (tối ưu cho cả điện thoại)
     const flowers = document.querySelector('.flowers');
     const popupCloseBtn = document.getElementById('popupCloseBtn');
     const musicToggle = document.getElementById('musicToggle');
     
-    if(flowers) flowers.addEventListener('click', openLetter);
-    if(popupCloseBtn) popupCloseBtn.addEventListener('click', closeLetter);
-    if(musicToggle) musicToggle.addEventListener('click', toggleMusic);
+    if(flowers) {
+        flowers.style.zIndex = '999'; // Ép bó hoa nổi lên để dễ bấm
+        flowers.addEventListener('click', openLetter);
+        flowers.addEventListener('touchstart', function(e) {
+            e.preventDefault(); 
+            openLetter();
+        }, {passive: false});
+    }
 
-    document.body.addEventListener('click', function initAudio() {
+    if(popupCloseBtn) {
+        popupCloseBtn.addEventListener('click', closeLetter);
+        popupCloseBtn.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            closeLetter();
+        }, {passive: false});
+    }
+
+    if(musicToggle) {
+        musicToggle.addEventListener('click', toggleMusic);
+        musicToggle.addEventListener('touchstart', toggleMusic);
+    }
+
+    // Xử lý chạy nhạc nền
+    const playAudio = () => {
         if (!isPlaying && bgMusic) {
             bgMusic.play().catch(e => console.log("Trình duyệt chặn autoplay"));
             isPlaying = true;
             document.getElementById('musicIcon').classList.remove('muted');
         }
-        document.body.removeEventListener('click', initAudio);
-    }, { once: true });
+        document.body.removeEventListener('click', playAudio);
+        document.body.removeEventListener('touchstart', playAudio);
+    };
+
+    document.body.addEventListener('click', playAudio, { once: true });
+    document.body.addEventListener('touchstart', playAudio, { once: true });
 });
 
 function toggleMusic() {
@@ -190,9 +195,6 @@ function openLetter() {
     const instruction = document.querySelector('.instruction');
     if(instruction) instruction.style.display = 'none';
 
-    // ==========================================
-    // ĐÂY LÀ DÒNG CHỮA LỖI: ÉP THẺ CSS HIỆN LÊN
-    // ==========================================
     if (messageEl) {
         messageEl.style.opacity = '1';
     }
@@ -205,7 +207,6 @@ function openLetter() {
         
         function typeWriter() {
             if (i < randomMessage.length) {
-                // Nhận diện \n để tạo thẻ <br> xuống dòng
                 let char = randomMessage.charAt(i);
                 messageEl.innerHTML += (char === '\n') ? '<br>' : char;
                 i++;
@@ -244,12 +245,11 @@ function createFlyingImages() {
     if (!container) return;
     container.innerHTML = '';
 
-    // Đã tăng chỉ số 'top' để đẩy toàn bộ ảnh xuống dưới, tránh che mất chữ
     const positions = [
-        { left: '8%', top: '38%', delay: '0s', rot: '-14deg', z: '20' },     // Ảnh 1: Hạ từ 22% xuống 38%
-        { left: '27%', top: '55%', delay: '0.4s', rot: '0deg', z: '40' },     // Ảnh 2: Hạ từ 52% xuống 55%
-        { left: '48%', top: '38%', delay: '0.8s', rot: '16deg', z: '30' },    // Ảnh 3: Hạ từ 22% xuống 38%
-        { left: '72%', top: '58%', delay: '1.2s', rot: '6deg', z: '20' }      // Ảnh 4: Hạ từ 56% xuống 58%
+        { left: '8%', top: '38%', delay: '0s', rot: '-14deg', z: '20' },     
+        { left: '27%', top: '55%', delay: '0.4s', rot: '0deg', z: '40' },     
+        { left: '48%', top: '38%', delay: '0.8s', rot: '16deg', z: '30' },    
+        { left: '72%', top: '58%', delay: '1.2s', rot: '6deg', z: '20' }      
     ];
 
     for (let i = 1; i <= 4; i++) {
@@ -260,11 +260,8 @@ function createFlyingImages() {
         card.style.top = positions[i-1].top;
         card.style.transform = `translateY(100vh) rotate(${positions[i-1].rot})`; 
         
-        // Căn chỉnh viền chuẩn form ảnh polaroid
         card.style.padding = '10px 10px 35px 10px';
         card.style.background = '#fff';
-        
-        // Bật lại viền màu tím cho ảnh số 3 giống như ảnh mẫu
         if (i === 3) card.style.border = '2px solid #8b5cf6';
         
         card.style.borderRadius = '5px';
@@ -272,11 +269,8 @@ function createFlyingImages() {
         card.style.opacity = '0';
         card.style.transition = `all 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) ${positions[i-1].delay}`;
         card.style.cursor = 'pointer';
-        
-        // Gán z-index để tạo hiệu ứng xếp đè như trong hình
         card.style.zIndex = positions[i-1].z;
 
-        // Xử lý hover: khi trỏ chuột vào sẽ phóng to và đưa lên lớp cao nhất (z-index: 50)
         card.onmouseover = () => { card.style.transform = `translateY(0) rotate(${positions[i-1].rot}) scale(1.15)`; card.style.zIndex = '50'; };
         card.onmouseout = () => { card.style.transform = `translateY(0) rotate(${positions[i-1].rot}) scale(1)`; card.style.zIndex = positions[i-1].z; };
         
@@ -285,7 +279,6 @@ function createFlyingImages() {
         let img = document.createElement('img');
         img.src = `images/${folderName}/${i}.jpg`; 
         
-        // Kích thước ảnh to, rõ ràng
         img.style.width = '180px';
         img.style.height = '240px';
         img.style.objectFit = 'cover';
