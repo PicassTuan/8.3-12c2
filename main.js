@@ -112,13 +112,8 @@ if (bgMusic) bgMusic.src = 'music.mp3';
 document.addEventListener("DOMContentLoaded", () => {
     createStarryNight();
     const titleEl = document.querySelector('.teachers-day-title');
-    const dateEl = document.querySelector('.teachers-day-date');
     
     if (titleEl) titleEl.innerText = `Chúc mừng Ngày Quốc tế Phụ nữ 🌷`;
-    if (dateEl) {
-        dateEl.style.display = 'block';
-        startTypingMessages(dateEl, headerMessages);
-    }
 
     const popupImg = document.querySelector('.popup-card-image img');
     if (popupImg) {
@@ -126,13 +121,58 @@ document.addEventListener("DOMContentLoaded", () => {
         popupImg.onerror = () => { popupImg.src = 'images/girl.jpeg'; }; 
     }
 
-    // Gắn sự kiện Click cho Bó hoa (tối ưu cho cả điện thoại)
+    // ==========================================
+    // XỬ LÝ MÀN HÌNH CHỜ (INTRO) & BẬT NHẠC (ĐÃ FIX LỖI KẸT MÀN HÌNH)
+    // ==========================================
+    const introScreen = document.getElementById('introScreen');
+    const mainContent = document.getElementById('mainContent');
+
+    if (introScreen) {
+        introScreen.addEventListener('click', () => {
+            // 1. ÉP MÀN HÌNH CHỜ BIẾN MẤT NGAY LẬP TỨC BẰNG JS
+            introScreen.style.transition = 'opacity 0.5s ease';
+            introScreen.style.opacity = '0';
+            
+            setTimeout(() => { 
+                introScreen.style.display = 'none'; 
+                if (mainContent) {
+                    mainContent.classList.remove('hidden');
+                    mainContent.style.opacity = '1';
+                    mainContent.style.visibility = 'visible';
+                }
+                
+                // Sau khi màn hình đen biến mất mới bắt đầu gõ chữ
+                const dateEl = document.querySelector('.teachers-day-date');
+                if (dateEl && typeof headerMessages !== 'undefined') {
+                    dateEl.style.display = 'block';
+                    startTypingMessages(dateEl, headerMessages);
+                }
+            }, 500);
+
+            // 2. CHẠY NHẠC TRONG VÙNG AN TOÀN (Nếu nhạc lỗi, ảnh vẫn hiển thị bình thường)
+            try {
+                if (!isPlaying && typeof bgMusic !== 'undefined' && bgMusic) {
+                    let playPromise = bgMusic.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(e => console.log("Bỏ qua cảnh báo chặn nhạc"));
+                    }
+                    isPlaying = true;
+                    let mIcon = document.getElementById('musicIcon');
+                    if(mIcon) mIcon.classList.remove('muted');
+                }
+            } catch(err) { 
+                console.log("Lỗi module nhạc:", err); 
+            }
+        });
+    }
+
+    // Gắn sự kiện Click cho Bó hoa
     const flowers = document.querySelector('.flowers');
     const popupCloseBtn = document.getElementById('popupCloseBtn');
     const musicToggle = document.getElementById('musicToggle');
     
     if(flowers) {
-        flowers.style.zIndex = '999'; // Ép bó hoa nổi lên để dễ bấm
+        flowers.style.zIndex = '999'; 
         flowers.addEventListener('click', openLetter);
         flowers.addEventListener('touchstart', function(e) {
             e.preventDefault(); 
@@ -152,34 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
         musicToggle.addEventListener('click', toggleMusic);
         musicToggle.addEventListener('touchstart', toggleMusic);
     }
-
-    // Xử lý chạy nhạc nền
-    const playAudio = () => {
-        if (!isPlaying && bgMusic) {
-            bgMusic.play().catch(e => console.log("Trình duyệt chặn autoplay"));
-            isPlaying = true;
-            document.getElementById('musicIcon').classList.remove('muted');
-        }
-        document.body.removeEventListener('click', playAudio);
-        document.body.removeEventListener('touchstart', playAudio);
-    };
-
-    document.body.addEventListener('click', playAudio, { once: true });
-    document.body.addEventListener('touchstart', playAudio, { once: true });
 });
-
-function toggleMusic() {
-    if (!bgMusic) return;
-    if (isPlaying) {
-        bgMusic.pause();
-        document.getElementById('musicIcon').classList.add('muted');
-    } else {
-        bgMusic.play();
-        document.getElementById('musicIcon').classList.remove('muted');
-    }
-    isPlaying = !isPlaying;
-}
-
 // ==========================================
 // 4. MỞ THƯ
 // ==========================================
