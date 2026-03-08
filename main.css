@@ -136,17 +136,15 @@ body {
   perspective: 1000px;
 }
 
-/* 2. Hiệu ứng bầu trời sao nằm ở dưới cùng */
 .night {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background-color: #0a0005 !important;
-    z-index: 1 !important; 
-    pointer-events: none;
-    transform: none !important; /* <--- CHÍNH LÀ DÒNG CHỮA LỖI NÀY */
+  position: fixed;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at top, #1a0a10 0%, #080305 100%);
+  overflow: hidden;
 }
 
 /* Stars */
@@ -377,23 +375,15 @@ body {
 
 .flower {
   position: absolute;
-  /* 1. Ép hoa tụt thật sâu xuống để gốc hoa giấu vào giấy gói */
-  bottom: 2vmin !important; /* Số càng nhỏ hoa càng tụt xuống thấp */
-  left: 50%;
-  
-  /* 2. CHÍNH LÀ DÒNG CHỮA LỖI NÀY: Dùng Scale để thu nhỏ toàn bộ bó hoa */
-  /* scale(0.7) nghĩa là hoa chỉ bằng 70% so với kích thước gốc */
-  transform: scale(0.7) !important;
-  
-  /* 3. Đảm bảo hoa vẫn mọc lên từ đáy */
-  transform-origin: bottom center !important;
-  
+  bottom: 17vmin;
+  transform-origin: bottom center;
   z-index: 10;
-  --fl-speed: 0.8s;
-  /* Giữ nguyên Width gốc để không hỏng animation */
-  width: 1vmin; 
+  --fl-speed: 0.3s;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  perspective: 1000;
 }
-
 /* === Top 3: Vươn cao giữa === */
 .flower--1 {
   left: 50%;
@@ -2945,61 +2935,4 @@ body {
     opacity: 0;
   }
 }
-/* =========================================
-   HIỆU ỨNG NGÔI SAO VÀ CHỮ LỜI CHÚC (ĐÃ THÊM)
-   ========================================= */
-/* 2. Hiệu ứng bầu trời sao nằm ở dưới cùng */
-.night {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background-color: #0a0005 !important;
-    z-index: 1 !important; 
-    pointer-events: none;
-    transform: none !important; /* <--- CHÍNH LÀ DÒNG CHỮA LỖI NÀY */
-}
 
-.star {
-    position: absolute;
-    background-color: #ffffff;
-    border-radius: 50%;
-    animation: twinkle infinite linear;
-    opacity: 0;
-}
-
-.star.small { width: 1.5px; height: 1.5px; }
-.star.medium { width: 2.5px; height: 2.5px; box-shadow: 0 0 4px #fff; }
-.star.large { width: 3.5px; height: 3.5px; box-shadow: 0 0 6px #fff; }
-
-@keyframes twinkle {
-    0% { opacity: 0; transform: scale(0.5); }
-    50% { opacity: 1; transform: scale(1.2); }
-    100% { opacity: 0; transform: scale(0.5); }
-}
-
-.teachers-day-text {
-    position: absolute;
-    top: 8%;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    width: 100%;
-    z-index: 10;
-    color: #ffffff;
-    text-shadow: 0 0 10px rgba(255, 182, 193, 0.8); /* Ánh sáng hồng nhạt */
-}
-
-.teachers-day-title {
-    font-family: 'Dancing Script', cursive;
-    font-size: 2.2rem;
-    margin-bottom: 5px;
-}
-
-.teachers-day-date {
-    font-family: 'Quicksand', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 600;
-    min-height: 30px; /* Giữ khung không bị giật khi chữ đang gõ */
-}
