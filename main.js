@@ -275,8 +275,9 @@ function createFlyingImages() {
         img.src = `images/${folderName}/${i}.jpg`; 
         
         // Kích thước chuẩn không bị đè
-        img.style.width = window.innerWidth <= 600 ? '100px' : '160px';
-        img.style.height = window.innerWidth <= 600 ? '135px' : '220px';
+        // Đã tăng kích thước ảnh lên to hơn rất nhiều
+        img.style.width = window.innerWidth <= 600 ? '130px' : '200px';
+        img.style.height = window.innerWidth <= 600 ? '175px' : '270px';
         img.style.objectFit = 'cover';
         img.style.borderRadius = '2px';
         
