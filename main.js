@@ -241,71 +241,53 @@ function closeLetter() {
 }
 
 // ==========================================
-// 5. BẮN 4 ẢNH LÊN MÀN HÌNH (Đã tối ưu cho cả Điện thoại & Máy tính)
+// 5. BẮN TỪNG ẢNH LÊN MÀN HÌNH (BAY TRÔI LÊN TRỜI)
 // ==========================================
 function createFlyingImages() {
     const container = document.getElementById('flyingImages');
     if (!container) return;
     container.innerHTML = '';
 
-    let positions = [];
-    let cardPadding = '10px 10px 35px 10px';
-    let imgWidth = '180px';
-    let imgHeight = '240px';
-
-    // KIỂM TRA: NẾU LÀ MÀN HÌNH ĐIỆN THOẠI (Chiều rộng <= 768px)
-    if (window.innerWidth <= 768) {
-        imgWidth = '130px';  // Thu nhỏ ảnh lại một chút
-        imgHeight = '170px';
-        cardPadding = '8px 8px 25px 8px'; // Thu nhỏ viền polaroid
-        
-        positions = [
-            // Xếp thành 2 hàng, đan xen nhau tạo độ lộn xộn tự nhiên
-            { left: '3%', top: '40%', delay: '0s', rot: '-12deg', z: '20' },     // Hàng 1 - Trái
-            { left: '48%', top: '45%', delay: '0.4s', rot: '8deg', z: '40' },    // Hàng 1 - Phải (Nổi lên trên)
-            { left: '8%', top: '65%', delay: '0.8s', rot: '6deg', z: '30' },     // Hàng 2 - Trái
-            { left: '45%', top: '70%', delay: '1.2s', rot: '-8deg', z: '50' }    // Hàng 2 - Phải
-        ];
-    } 
-    // NẾU LÀ MÀN HÌNH MÁY TÍNH (Dàn ngang như cũ)
-    else {
-        positions = [
-            { left: '8%', top: '38%', delay: '0s', rot: '-14deg', z: '20' },     
-            { left: '27%', top: '55%', delay: '0.4s', rot: '0deg', z: '40' },     
-            { left: '48%', top: '38%', delay: '0.8s', rot: '16deg', z: '30' },    
-            { left: '72%', top: '58%', delay: '1.2s', rot: '6deg', z: '20' }      
-        ];
-    }
-
     for (let i = 1; i <= 4; i++) {
         let card = document.createElement('div');
         
+        // Chia đều vị trí xuất phát từ trái sang phải
+        let leftPos = [10, 35, 60, 80][i-1]; 
+        if (window.innerWidth <= 600) {
+            leftPos = [5, 30, 55, 75][i-1]; // Khoảng cách cho điện thoại
+        }
+        
         card.style.position = 'absolute';
-        card.style.left = positions[i-1].left;
-        card.style.top = positions[i-1].top;
-        card.style.transform = `translateY(100vh) rotate(${positions[i-1].rot})`; 
+        card.style.left = leftPos + '%';
+        card.style.bottom = '-300px'; // Nằm giấu sẵn ở dưới đáy màn hình
+        card.style.zIndex = '50';
         
-        card.style.padding = cardPadding;
+        // Khung ảnh Polaroid
+        card.style.padding = window.innerWidth <= 600 ? '6px 6px 20px 6px' : '10px 10px 35px 10px';
         card.style.background = '#fff';
-        if (i === 3 && window.innerWidth > 768) card.style.border = '2px solid #8b5cf6'; // Chỉ viền tím trên máy tính
-        
         card.style.borderRadius = '5px';
-        card.style.boxShadow = '0 15px 35px rgba(0,0,0,0.4)';
-        card.style.opacity = '0';
-        card.style.transition = `all 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) ${positions[i-1].delay}`;
+        card.style.boxShadow = '0 10px 25px rgba(0,0,0,0.3)';
         card.style.cursor = 'pointer';
-        card.style.zIndex = positions[i-1].z;
-
-        card.onmouseover = () => { card.style.transform = `translateY(0) rotate(${positions[i-1].rot}) scale(1.15)`; card.style.zIndex = '100'; };
-        card.onmouseout = () => { card.style.transform = `translateY(0) rotate(${positions[i-1].rot}) scale(1)`; card.style.zIndex = positions[i-1].z; };
         
-        card.onclick = openLetter;
+        // TÍNH TOÁN HIỆU ỨNG BAY LÊN
+        let rotate = (Math.random() * 30 - 15) + 'deg'; // Góc nghiêng ngẫu nhiên
+        let drift = (Math.random() * 80 - 40) + 'px'; // Trôi lắc lư sang 2 bên
+        let delay = (i - 1) * 3; // CỰC QUAN TRỌNG: Cách 3 giây mới thả 1 ảnh (Từng ảnh xuất hiện rời rạc)
+        
+        card.style.setProperty('--rotate', rotate);
+        card.style.setProperty('--drift-x', drift);
+        
+        // Gắn hiệu ứng bay lặp đi lặp lại (Mất 14s để bay hết màn hình)
+        card.style.animation = `flyUp 14s ${delay}s ease-in-out infinite`;
+
+        card.onclick = openLetter; // Bấm vào ảnh đang bay để mở thư
 
         let img = document.createElement('img');
         img.src = `images/${folderName}/${i}.jpg`; 
         
-        img.style.width = imgWidth;
-        img.style.height = imgHeight;
+        // Chỉnh kích thước ảnh thon gọn, vừa vặn cho điện thoại
+        img.style.width = window.innerWidth <= 600 ? '100px' : '160px';
+        img.style.height = window.innerWidth <= 600 ? '135px' : '220px';
         img.style.objectFit = 'cover';
         img.style.borderRadius = '2px';
         
@@ -313,24 +295,5 @@ function createFlyingImages() {
 
         card.appendChild(img);
         container.appendChild(card);
-
-        setTimeout(() => { 
-            card.style.opacity = '1'; 
-            card.style.transform = `translateY(0) rotate(${positions[i-1].rot})`; 
-            
-            setTimeout(() => {
-                card.style.transition = 'transform 0.4s'; 
-                card.animate([
-                    { marginTop: '0px' },
-                    { marginTop: '-10px' },
-                    { marginTop: '0px' }
-                ], {
-                    duration: 4000,
-                    iterations: Infinity,
-                    easing: 'ease-in-out',
-                    delay: i * 200
-                });
-            }, 2000);
-        }, 100);
     }
 }
