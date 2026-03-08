@@ -241,7 +241,7 @@ function closeLetter() {
 }
 
 // ==========================================
-// 5. BẮN TỪNG ẢNH LÊN MÀN HÌNH (BAY TRÔI LÊN TRỜI)
+// 5. BẮN TỪNG ẢNH LÊN MÀN HÌNH (SỬ DỤNG JS NATIVE - 100% KHÔNG LỖI)
 // ==========================================
 function createFlyingImages() {
     const container = document.getElementById('flyingImages');
@@ -268,24 +268,13 @@ function createFlyingImages() {
         card.style.borderRadius = '5px';
         card.style.boxShadow = '0 10px 25px rgba(0,0,0,0.3)';
         card.style.cursor = 'pointer';
-        
-        // TÍNH TOÁN HIỆU ỨNG BAY LÊN
-        let rotate = (Math.random() * 30 - 15) + 'deg'; // Góc nghiêng ngẫu nhiên
-        let drift = (Math.random() * 80 - 40) + 'px'; // Trôi lắc lư sang 2 bên
-        let delay = (i - 1) * 3; // CỰC QUAN TRỌNG: Cách 3 giây mới thả 1 ảnh (Từng ảnh xuất hiện rời rạc)
-        
-        card.style.setProperty('--rotate', rotate);
-        card.style.setProperty('--drift-x', drift);
-        
-        // Gắn hiệu ứng bay lặp đi lặp lại (Mất 14s để bay hết màn hình)
-        card.style.animation = `flyUp 14s ${delay}s ease-in-out infinite`;
 
         card.onclick = openLetter; // Bấm vào ảnh đang bay để mở thư
 
         let img = document.createElement('img');
         img.src = `images/${folderName}/${i}.jpg`; 
         
-        // Chỉnh kích thước ảnh thon gọn, vừa vặn cho điện thoại
+        // Kích thước chuẩn không bị đè
         img.style.width = window.innerWidth <= 600 ? '100px' : '160px';
         img.style.height = window.innerWidth <= 600 ? '135px' : '220px';
         img.style.objectFit = 'cover';
@@ -295,5 +284,22 @@ function createFlyingImages() {
 
         card.appendChild(img);
         container.appendChild(card);
+
+        // TẠO HIỆU ỨNG BAY TRỰC TIẾP TRÊN JS (Bỏ qua CSS)
+        let rotate = (Math.random() * 30 - 15) + 'deg';
+        let drift = (Math.random() * 80 - 40) + 'px';
+        let delayTime = (i - 1) * 3000; // Cách nhau 3 giây mới thả 1 ảnh
+
+        card.animate([
+            { transform: `translateY(0) translateX(0) rotate(0deg) scale(0.5)`, opacity: 0 },
+            { transform: `translateY(-20vh) translateX(${drift}) rotate(${rotate}) scale(0.9)`, opacity: 1, offset: 0.1 },
+            { transform: `translateY(-60vh) translateX(calc(${drift} * -0.5)) rotate(calc(${rotate} * -1)) scale(1)`, opacity: 1, offset: 0.5 },
+            { transform: `translateY(-140vh) translateX(${drift}) rotate(${rotate}) scale(0.8)`, opacity: 0 }
+        ], {
+            duration: 14000,       // Mất 14 giây để bay hết màn hình
+            delay: delayTime,      // Chờ đến lượt mới bay
+            iterations: Infinity,  // Bay lặp đi lặp lại mãi mãi
+            easing: 'ease-in-out'
+        });
     }
 }
