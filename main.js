@@ -10,6 +10,7 @@ let displayName = rawName ? rawName : "cậu"; // Mặc định nếu ko có ?na
 let folderName = 'default';
 if (rawName) {
     folderName = rawName.toLowerCase()
+                        .replace(/đ/g, 'd')
                         .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
                         .replace(/\s+/g, '') 
                         .replace(/[^a-z0-9]/g, ''); 
